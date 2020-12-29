@@ -71,6 +71,10 @@ Sales Taxes: 7.90
 Total: 98.38
 ```
 
+### Dependency
+
+- Ruby version - ruby 2.4.1p111
+
 ### How to Run
 `ruby task_runner.rb <filename>.txt`  
 - three sample input files have been added to `/input/` folder
