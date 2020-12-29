@@ -19,6 +19,7 @@ class Receipt
   def sales_list_format(sales_details)
     "#{sales_details[:quantity]} #{sales_details[:name]}: #{'%.2f' % sales_details[:cost]}"
   end
+
   
   private
 

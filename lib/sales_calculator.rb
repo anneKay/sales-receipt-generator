@@ -26,10 +26,14 @@ class SalesCalculator
       item_details
     end
 
-    def compute_item_tax(item_details)
+    def compute_tax(item_details)
       item_tax = 0
       item = Item.new(item_details[:name])
-      item_details[:quantity] * compute_tax(item)
+      sales_tax = SalesTax.new(item_details[:price])
+      item_tax += sales_tax.basic_sales_tax unless item.is_essential?
+      item_tax +=  sales_tax.import_duty if item.is_imported?
+
+      item_details[:quantity] * item_tax
     end
 
     def generate_item_details(item)
@@ -37,13 +41,6 @@ class SalesCalculator
       item_details[:cost] = get_item_cost
   
       item_details
-    end
-
-    def compute_tax(item)
-      item_tax = 0
-      sales_tax = SalesTax.new(item_details[:price])
-      item_tax += sales_tax.basic_sales_tax unless item.is_essential?
-      item_tax +=  sales_tax.import_duty if item.is_imported?
     end
 
     def compute_item_cost(tax)

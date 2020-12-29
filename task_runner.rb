@@ -10,5 +10,5 @@ filename = ARGV.first
 task = FileReader.new(filename)
 sales = SalesCalculator.new(task.items)
 sales.set_sales_details
-receipt = Receipt.new(sales.item_list, sales.cost_list, sales.sales_tax)
-receipt.generate_receipt
+receipt = Receipt.new(sales.item_list, sales.total_cost, sales.sales_tax)
+receipt.print_receipt
