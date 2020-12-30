@@ -8,11 +8,7 @@ class Parser
 
   def build_item_details
     if is_valid_format?
-      {
-        quantity: get_quantity,
-        price: get_price,
-        name: get_name
-      }
+      { quantity: get_quantity, price: get_price, name: get_name }
     end
   end
 
@@ -23,7 +19,7 @@ class Parser
     end
 
     def get_item_details(item)
-      item.downcase.strip.split(" ")
+      item&.downcase.strip.split(" ")
     end
 
     def is_valid_number?(number)

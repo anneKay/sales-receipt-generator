@@ -7,10 +7,8 @@ class FileReader
   end
 
   def read_file
-
     file_path = "input/#{@filename}"
-    File.read(file_path).split("\n") if !@filename.strip.empty? && File.exist?(file_path)
-
+    File.read(file_path).split("\n") if !@filename&.strip.to_s.empty? && File.exist?(file_path)
   end
 
 end
