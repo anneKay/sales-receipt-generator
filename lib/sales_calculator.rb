@@ -1,70 +1,77 @@
 class SalesCalculator
+  attr_reader :items
 
-  def initialize(items)
+  def initialize(items, sales_tax)
     @items = items
     @total_cost = 0.0
-    @sales_tax = 0.0
+    @total_tax = 0.0
     @item_list = []
+    @sales_tax = sales_tax
   end
 
   def sales_details
-    valid_items = sanitize_item_list
-    valid_items&.map do |item|
-      @item_list << generate_item_details(item)
-      @total_cost += get_item_cost
-      @sales_tax += compute_item_tax(@item_details)
-    end
+    build_sales_details
     build_item
   end
 
   private
 
+    def sales_item(item)
+      update_list(item)
+      increment_total_cost(item)
+      increment_sales_tax(item)
+    end
+
+    def build_sales_details
+      items&.map { |item| sales_item(item) }
+    end
+
+    def update_list(item)
+      @item_list << generate_item_details(item)
+    end
+
+    def increment_total_cost(item)
+      @total_cost += get_item_cost(item)
+    end
+
+    def increment_sales_tax(item)
+      @total_tax += compute_item_tax(item)
+    end
+
     def build_item
-      { list: @item_list, total_cost: @total_cost, sales_tax: @sales_tax }
+      { list: @item_list, total_cost: @total_cost, sales_tax: @total_tax }
     end
 
-    def generate_item_details(item)
-      item_details = item_details(item) 
-      item_details[:cost] = get_item_cost
-
-      item_details
+    def compute_item_tax(item)
+      item[:quantity] * compute_tax(item)
     end
 
-    def compute_item_tax(item_details)
-      item = Item.new(item_details[:name])
-      item_details[:quantity] * compute_tax(item, item_details)
-    end
-
-    def compute_tax(item, item_details)
+    def compute_tax(item)
       item_tax = 0
-      sales_tax = SalesTax.new(item_details[:price])
-      item_tax += sales_tax.basic_sales_tax unless item.is_essential?
-      item_tax +=  sales_tax.import_duty if item.is_imported?
+      basic_tax = basic_sales_tax(item[:price], item[:essential])
+      import_duty = import_duty(item[:price], item[:imported])
+      item_tax += (basic_tax + import_duty)
+    end
 
-      item_tax
+    def basic_sales_tax(price, type)
+      type ? 0 : @sales_tax.basic_sales_tax(price)
+    end
+
+    def import_duty(price, type)
+      type ? @sales_tax.import_duty(price) : 0
     end
 
     def generate_item_details(item)
-      item_details = item_details(item) 
-      item_details[:cost] = get_item_cost
-
-      item_details
+      item[:cost] = get_item_cost(item)
+      item
     end
 
-    def compute_item_cost(tax)
-      (@item_details[:quantity] * @item_details[:price]) + tax
+    def compute_item_cost(item, tax)
+      (item[:quantity] * item[:price]) + tax
     end
   
-    def get_item_cost
-      compute_item_cost(compute_item_tax(@item_details)).round(2)
-    end
-  
-    def item_details(item)
-      parser = Parser.new(item)
-      @item_details = parser.build_item_details
+    def get_item_cost(item)
+      compute_item_cost(item, compute_item_tax(item)).round(2)
     end
 
-    def sanitize_item_list
-      @items&.select{|item| item_details(item)}
-    end
 end

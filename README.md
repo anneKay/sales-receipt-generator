@@ -74,8 +74,19 @@ Total: 98.38
 ### Dependency
 
 - Ruby version - ruby 2.4.1p111
+- Rspec
 
 ### How to Run
+- `bundle install`
 `ruby task_runner.rb <filename>.txt`  
-- three sample input files have been added to `/input/` folder
- 
+
+- three sample input files have been added to `input` folder
+- please ensure that any test file is added inside the `input` folder
+
+
+### How to test
+
+ - to run all the test suite at once
+    run `rspec spec`
+- to run the test files separately
+    run `rspec spec/<filename>`

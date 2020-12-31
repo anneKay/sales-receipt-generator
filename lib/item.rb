@@ -1,16 +1,15 @@
 class Item
   attr_reader :name
 
-  def initialize(name)
-    @name = name
+  def initialize
   end
 
-  def is_essential?
-    essentials.any? { |essential| @name.include? essential }
+  def is_essential?(name)
+    essentials.any? { |essential| name.include? essential }
   end
 
-  def is_imported?
-    @name.include? 'imported'
+  def is_imported?(name)
+    name.include? 'imported'
   end
 
   private

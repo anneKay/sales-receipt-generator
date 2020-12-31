@@ -8,55 +8,58 @@ describe SalesCalculator do
 
   before :each do
     def calculator(item)
-      sales_calculator = SalesCalculator.new(item).sales_details
+      sales_tax = SalesTax.new()
+      sales_calculator = SalesCalculator.new(item, sales_tax).sales_details
     end
   end
 
   it "should return a hash with items, total cost of all items and sales tax" do
-    item = ["2 book at 12.49", "1 music CD at 14.99", "1 chocolate bar at 0.85"]
-    expect(calculator(item)).to be_an_instance_of(Hash)
-    expect(calculator(item)).to have_key(:list)
-    expect(calculator(item)).to have_key(:total_cost)
-    expect(calculator(item)).to have_key(:sales_tax)
+    items = [{:quantity=>1, :price=>27.99, :name=>"imported bottle of perfume", :essential=>false, :imported=>true}]
+    expect(calculator(items)).to be_an_instance_of(Hash)
+    expect(calculator(items)).to have_key(:list)
+    expect(calculator(items)).to have_key(:total_cost)
+    expect(calculator(items)).to have_key(:sales_tax)
   end
 
-  it "should return the 0 as tax payable for essential items" do
-    item = ["2 book at 12.49"]
-    expect(calculator(item)[:sales_tax]).to eq(0)
+  it "should return 0 as tax payable for essential items" do
+    items = [{:quantity=>2, :price=>24.98, :name=>"book", :essential=>true, :imported=>false}]
+    expect(calculator(items)[:sales_tax]).to eq(0)
   end
 
   it "should return the right tax amount for imported goods" do
-    item = ["1 imported bottle of perfume at 47.50"]
-    expect(calculator(item)[:sales_tax]).to eq (7.15)
+    items = [{:quantity=>1, :price=>47.50, :name=>"imported bottle of perfume", :essential=>false, :imported=>true}]
+    expect(calculator(items)[:sales_tax]).to eq (7.15)
   end
 
   it "should return the right tax amount for an item that is both an essential and imported good" do
-    item = ["1 imported box of chocolates at 10.00"]
-    expect(calculator(item)[:sales_tax]).to eq (0.5)
+    items = [{:quantity=>1, :price=>10.00, :name=>"imported box of chocolates", :essential=>true, :imported=>true}]
+    expect(calculator(items)[:sales_tax]).to eq (0.5)
   end
 
-  it "should return the accurate total cost for a product with tax inclusive" do
-    item = ["1 imported bottle of perfume at 47.50"]
-    expect(calculator(item)[:list].first[:cost]).to eq (54.65)
+  it "should return the accurate total cost for an imported product with tax inclusive" do
+    items = [{:quantity=>1, :price=>47.50, :name=>"1 imported bottle of perfume", :essential=>false, :imported=>true}]
+    expect(calculator(items)[:list].first[:cost]).to eq (54.65)
+  end
+
+  it "should return the accurate total cost for a non essential product with tax inclusive" do
+    items = [{:quantity=>1, :price=>18.99, :name=>"1 bottle of perfume", :essential=>false, :imported=>false}]
+    expect(calculator(items)[:list].first[:cost]).to eq (20.89)
   end
 
   it "should return the correct total amount for all products" do
-    items = ["2 book at 12.49", "1 music CD at 14.99", "1 chocolate bar at 0.85"]
+    items = [ {:quantity=>2, :price=>12.49, :name=>"book", :essential=>true, :imported=>false},
+              {:quantity=>1, :price=>14.99, :name=>"music CD", :essential=>false, :imported=>false},
+              {:quantity=>1, :price=>0.85, :name=>"chocolate bar", :essential=>true, :imported=>false}
+            ]
     expect(calculator(items)[:total_cost]).to eq (42.32)
   end
 
   it "should return the correct sales tax for all products" do
-    items = ["2 book at 12.49", "1 music CD at 14.99", "1 chocolate bar at 0.85"]
+    items = [ {:quantity=>2, :price=>12.49, :name=>"book", :essential=>true, :imported=>false},
+      {:quantity=>1, :price=>14.99, :name=>"music CD", :essential=>false, :imported=>false},
+      {:quantity=>1, :price=>0.85, :name=>"chocolate bar", :essential=>true, :imported=>false}
+    ]
     expect(calculator(items)[:sales_tax]).to eq (1.50)
   end
-
-  it "should generate receipt for only valid input" do
-    item = ["1 imported bottle of perfume at 47.50", "1 imported box of chocolates 10.00"]
-    number_of_input_products = item.size
-    number_of_output_products = calculator(item)[:list].size
-    expect(number_of_input_products).not_to eq (number_of_output_products)
-  end
-
-
 
 end
