@@ -78,7 +78,7 @@ Total: 98.38
 
 ### How to Run
 - `bundle install`
-`ruby task_runner.rb <filename>.txt`  
+- `ruby task_runner.rb <filename>.txt`  
 
 - three sample input files have been added to `input` folder
 - please ensure that any test file is added inside the `input` folder

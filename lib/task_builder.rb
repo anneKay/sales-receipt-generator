@@ -24,11 +24,11 @@ class TaskBuilder
     end
 
     def sales_tax
-      SalesTax.new()
+      SalesTax.new
     end
 
     def item_type
-      Item.new()
+      Item.new
     end
 
     def transformed_input
